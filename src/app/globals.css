@@ -1,0 +1,337 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ────────────────────────────────────────────────────────────
+   id.140dev — design tokens
+   Палитра кости, железа и ржавчины. Без неона и градиентов.
+   ──────────────────────────────────────────────────────────── */
+
+:root {
+  --bone: #e7e2d6;
+  --void: #0a0a0a;
+  --iron: #1a1a1a;
+  --ash: #6e6a62;
+  --blood: #6b1d18;
+  --acid: #b8ff2e;
+
+  --bg: var(--void);
+  --fg: var(--bone);
+
+  --grid-unit: 8px;
+  --edge: clamp(14px, 1.6vw, 28px);
+  /* полоса под вертикальную навигацию справа (md+) */
+  --nav-rail: clamp(132px, 12vw, 184px);
+
+  --t-fast: 240ms;
+  --t-med: 620ms;
+  --t-slow: 1200ms;
+
+  --ease-arch: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ────────────────────────────── reset ────────────────────────────── */
+
+* {
+  border: 0 solid transparent;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02", "tnum";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+body {
+  overflow-x: hidden;
+  cursor: none;
+}
+
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--blood);
+  color: var(--bone);
+}
+
+/* ────────────────────────────── grain ─────────────────────────────
+   Шум — это не «текстурка», а кожа всего сайта. Накладывается поверх
+   на мультиплай, поэтому работает и на тёмных, и на светлых сценах.
+   ────────────────────────────────────────────────────────────────── */
+
+.grain {
+  position: fixed;
+  inset: -20%;
+  z-index: 90;
+  pointer-events: none;
+  background-image: url("/noise.svg");
+  background-size: 220px 220px;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  will-change: transform;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 91;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    transparent 4px
+  );
+  opacity: 0.25;
+  mix-blend-mode: multiply;
+}
+
+/* ────────────────────────── typographic kit ──────────────────────── */
+
+.t-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  line-height: 0.86;
+}
+
+.t-grotesk {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.t-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-feature-settings: "tnum", "ss01";
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.t-meta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--ash);
+}
+
+/* кинетический заголовок: широкий по горизонтали, короткий по вертикали */
+.t-stretch {
+  font-family: var(--font-grotesk), system-ui, sans-serif;
+  font-stretch: 125%;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.78;
+}
+
+/* ────────────────────────────── frame ────────────────────────────── */
+
+.edge-frame {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  padding: var(--edge);
+}
+
+.edge-frame .interactive {
+  pointer-events: auto;
+}
+
+.tick {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--bone);
+  border-left: 1px solid var(--bone);
+  opacity: 0.8;
+}
+.tick.tl {
+  top: var(--edge);
+  left: var(--edge);
+}
+.tick.tr {
+  top: var(--edge);
+  right: var(--edge);
+  transform: scaleX(-1);
+}
+.tick.bl {
+  bottom: var(--edge);
+  left: var(--edge);
+  transform: scaleY(-1);
+}
+.tick.br {
+  bottom: var(--edge);
+  right: var(--edge);
+  transform: scale(-1, -1);
+}
+
+.edge-row {
+  position: absolute;
+  left: var(--edge);
+  right: var(--edge);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.edge-row.top {
+  top: var(--edge);
+}
+.edge-row.bot {
+  bottom: var(--edge);
+}
+
+/* ─────────────────────────── custom cursor ───────────────────────── */
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--bone);
+  border-radius: 0;
+  transform: translate3d(-50%, -50%, 0);
+}
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--bone);
+  transform: translate3d(-50%, -50%, 0);
+  transition: width var(--t-fast) var(--ease-out),
+    height var(--t-fast) var(--ease-out);
+}
+.cursor-ring[data-state="hover"] {
+  width: 56px;
+  height: 56px;
+}
+.cursor-ring[data-state="press"] {
+  width: 22px;
+  height: 22px;
+}
+
+/* ───────────────────────── route transition ──────────────────────── */
+
+.shutter {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+.shutter > span {
+  background: var(--iron);
+  transform: scaleY(0);
+  transform-origin: top;
+  border-right: 1px solid rgba(231, 226, 214, 0.04);
+}
+.shutter > span:last-child {
+  border-right: 0;
+}
+
+/* ────────────────────────── archive primitives ───────────────────── */
+
+.rule {
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.dotted {
+  background-image: radial-gradient(
+    circle,
+    var(--ash) 1px,
+    transparent 1.2px
+  );
+  background-size: 6px 6px;
+}
+
+.outline {
+  -webkit-text-stroke: 1px var(--bone);
+  color: transparent;
+}
+
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch::before {
+  color: var(--blood);
+  transform: translate(1px, 0);
+  mix-blend-mode: screen;
+  clip-path: polygon(0 0, 100% 0, 100% 38%, 0 38%);
+}
+.glitch::after {
+  color: var(--acid);
+  transform: translate(-1px, 0);
+  mix-blend-mode: screen;
+  clip-path: polygon(0 62%, 100% 62%, 100% 100%, 0 100%);
+}
+
+/* ───────────────────────────── helpers ───────────────────────────── */
+
+.no-bullets {
+  list-style: none;
+}
+
+.hairline {
+  border-color: rgba(231, 226, 214, 0.18);
+}
+
+.sticky-corner {
+  position: sticky;
+  top: var(--edge);
+}
+
+.invert-block {
+  background: var(--bone);
+  color: var(--void);
+}
+
+/* honour reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
