@@ -1,4 +1,7 @@
+"use client";
+
 import { TLink } from "@/components/shell/TLink";
+import { defaultLocale, localeHref } from "@/lib/i18n";
 
 export default function NotFound() {
   return (
@@ -21,7 +24,7 @@ export default function NotFound() {
         </div>
         <div className="col-span-12 md:col-span-6 flex md:justify-end items-end">
           <TLink
-            href="/"
+            href={localeHref(defaultLocale, "/")}
             className="t-mono text-[12px] text-bone tracking-[0.32em] border-b border-bone/40 pb-1"
           >
             ← на главную

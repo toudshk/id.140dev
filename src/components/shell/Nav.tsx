@@ -2,36 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { stripLocale } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/context";
 import { useTransitionTo } from "./Transition";
 
-const ROUTES = [
-  { label: "главная", href: "/", code: "01" },
-  { label: "работы", href: "/work", code: "02" },
-  { label: "обо мне", href: "/about", code: "03" },
-  { label: "контакт", href: "/contact", code: "04" }
-];
-
-/**
- * Вертикальная навигация по правому краю.
- * Каждый пункт — одна ссылка: номер, линия и подпись кликабельны целиком.
- */
 export function Nav() {
   const pathname = usePathname();
   const go = useTransitionTo();
+  const { t, href } = useI18n();
+  const { path } = stripLocale(pathname);
+
+  const routes = [
+    { label: t.nav.home, href: href("/"), code: "01", match: "/" },
+    { label: t.nav.work, href: href("/work"), code: "02", match: "/work" },
+    { label: t.nav.about, href: href("/about"), code: "03", match: "/about" },
+    {
+      label: t.nav.contact,
+      href: href("/contact"),
+      code: "04",
+      match: "/contact"
+    }
+  ];
 
   return (
     <nav
       className="fixed top-1/2 -translate-y-1/2 right-[var(--edge)] z-[85] hidden md:flex md:w-[var(--nav-rail)] md:justify-end pointer-events-none"
-      aria-label="навигация"
+      aria-label={t.nav.aria}
     >
       <ul className="no-bullets flex flex-col items-end gap-2 pointer-events-auto">
-        {ROUTES.map((r) => {
+        {routes.map((r) => {
           const active =
-            r.href === "/"
-              ? pathname === "/"
-              : pathname === r.href || pathname.startsWith(r.href + "/");
+            r.match === "/"
+              ? path === "/"
+              : path === r.match || path.startsWith(`${r.match}/`);
+
           return (
-            <li key={r.href}>
+            <li key={r.match}>
               <Link
                 href={r.href}
                 onClick={(e) => {

@@ -2,13 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import { ensureGsap, gsap } from "@/lib/gsap";
+import { useI18n } from "@/lib/i18n/context";
 import { ShaderPlane } from "./ShaderPlane";
 import { Glyphs } from "./Glyphs";
 import { TLink } from "@/components/shell/TLink";
-import { PROJECTS, META } from "@/lib/data";
 
 export function Intake() {
   const root = useRef<HTMLDivElement>(null);
+  const { t, href } = useI18n();
 
   useEffect(() => {
     let cancel = false;
@@ -48,7 +49,7 @@ export function Intake() {
     };
   }, []);
 
-  const live = PROJECTS.filter((p) => p.status === "live").length;
+  const live = t.projects.filter((p) => p.status === "live").length;
 
   return (
     <section
@@ -58,17 +59,16 @@ export function Intake() {
       <ShaderPlane />
 
       <div className="relative z-10 grid min-h-screen grid-cols-12 gap-4 px-[var(--edge)] py-[calc(var(--edge)*3)]">
-        {/* левая колонка */}
         <aside className="col-span-12 md:col-span-3 flex flex-col justify-between">
           <div className="space-y-3">
             <div className="t-meta" data-mark>
-              {META.alias}
+              {t.site.alias}
             </div>
             <div className="t-meta" data-mark>
-              {META.role}
+              {t.site.role}
             </div>
             <div className="t-meta" data-mark>
-              {META.city}
+              {t.site.city}
             </div>
           </div>
           <div className="hidden md:block space-y-3 mt-12">
@@ -77,13 +77,11 @@ export function Intake() {
               className="t-mono text-[11px] leading-[1.7] text-bone/70 max-w-[28ch]"
               data-mark
             >
-              Делаю сайты для брендов, художников и небольших студий.
-              Беру по одному проекту за раз.
+              {t.home.pitch}
             </p>
           </div>
         </aside>
 
-        {/* центр — большое имя */}
         <div className="col-span-12 md:col-span-7 flex flex-col justify-center">
           <h1
             data-display
@@ -108,44 +106,44 @@ export function Intake() {
 
           <div className="mt-12 flex items-center gap-6">
             <TLink
-              href="/work"
+              href={href("/work")}
               className="group inline-flex items-center gap-3 t-mono text-[12px] text-bone tracking-[0.32em] border-b border-bone/40 pb-1"
               data-mark
             >
-              <span>посмотреть работы</span>
-              <span aria-hidden className="transition-transform group-hover:translate-x-1">
+              <span>{t.home.viewWork}</span>
+              <span
+                aria-hidden
+                className="transition-transform group-hover:translate-x-1"
+              >
                 ⟶
               </span>
             </TLink>
             <TLink
-              href="/about"
+              href={href("/about")}
               className="t-mono text-[11px] text-ash tracking-[0.32em]"
               data-mark
             >
-              обо мне
+              {t.home.aboutLink}
             </TLink>
           </div>
         </div>
 
-        {/* правая колонка — счётчики */}
         <aside className="col-span-12 md:col-span-2 flex flex-col items-end justify-between text-right">
           <div className="space-y-1" data-side>
-            <div className="t-meta">проектов</div>
+            <div className="t-meta">{t.home.projectsLabel}</div>
             <div className="t-stretch text-bone text-[44px] leading-none tabular-nums">
               {String(live).padStart(2, "0")}
             </div>
-            <div className="t-meta">опубликовано</div>
+            <div className="t-meta">{t.home.publishedLabel}</div>
           </div>
 
           <div className="space-y-1 mt-10" data-side>
-            <div className="t-meta">статус</div>
-            <div className="t-mono text-[11px] text-acid">
-              открыт к заказам
-            </div>
+            <div className="t-meta">{t.home.statusLabel}</div>
+            <div className="t-mono text-[11px] text-acid">{t.home.statusValue}</div>
           </div>
 
           <div className="space-y-2 mt-10" data-side>
-            <div className="t-meta">избранное</div>
+            <div className="t-meta">{t.home.featuredLabel}</div>
             <a
               href="https://anntiart.ru"
               target="_blank"
@@ -166,7 +164,6 @@ export function Intake() {
         </aside>
       </div>
 
-      {/* «нога» главной — крупная outline-цифра */}
       <div className="pointer-events-none absolute bottom-[calc(var(--edge)*2)] left-[var(--edge)] right-[var(--edge)] z-10 flex items-end justify-between">
         <span className="outline t-stretch text-[14vw] leading-[0.8] hidden md:block select-none">
           140

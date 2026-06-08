@@ -2,16 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ensureGsap, gsap } from "@/lib/gsap";
+import { useI18n } from "@/lib/i18n/context";
 
-/**
- * Контакт. Адрес скрыт от ботов простым «удержи кнопку».
- * Это не геймификация — просто обходим автоматических сборщиков.
- */
 export default function ContactPage() {
   const root = useRef<HTMLDivElement>(null);
   const hold = useRef<HTMLButtonElement>(null);
   const [progress, setProgress] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     let cancel = false;
@@ -87,15 +85,15 @@ export default function ContactPage() {
     >
       <header className="grid grid-cols-12 gap-4 mb-24">
         <div className="col-span-12 md:col-span-4" data-tline>
-          <div className="t-meta">04</div>
-          <div className="t-meta mt-1">контакт</div>
+          <div className="t-meta">{t.contact.code}</div>
+          <div className="t-meta mt-1">{t.contact.title}</div>
         </div>
         <div className="col-span-12 md:col-span-8">
           <h1
             className="t-display italic text-[12vw] md:text-[8vw] leading-[0.86] text-bone"
             data-tline
           >
-            написать
+            {t.contact.heading}
           </h1>
         </div>
       </header>
@@ -103,11 +101,10 @@ export default function ContactPage() {
       <div className="grid grid-cols-12 gap-4 flex-1 items-center">
         <div className="col-span-12 md:col-span-7" data-tline>
           <p className="t-grotesk text-[20px] md:text-[24px] leading-[1.45] text-bone/80 max-w-[44ch]">
-            Чтобы получить почту, удержите кнопку полторы секунды.
-            
+            {t.contact.hint}
           </p>
           <p className="t-mono text-[11px] tracking-[0.32em] text-ash mt-6">
-            короткое письмо приветствуется.
+            {t.contact.note}
           </p>
         </div>
 
@@ -117,7 +114,7 @@ export default function ContactPage() {
               ref={hold}
               data-magnetic
               className="relative w-full md:w-[320px] h-[120px] border hairline overflow-hidden group"
-              aria-label="удерживайте, чтобы получить адрес"
+              aria-label={t.contact.holdAria}
             >
               <span
                 className="absolute inset-0 bg-bone origin-left"
@@ -134,7 +131,7 @@ export default function ContactPage() {
                   mixBlendMode: progress > 50 ? "difference" : "normal"
                 }}
               >
-                удерживать
+                {t.contact.hold}
               </span>
               <span
                 className="absolute bottom-2 right-3 t-mono text-[10px] text-ash tabular-nums"
@@ -145,7 +142,7 @@ export default function ContactPage() {
             </button>
           ) : (
             <div className="w-full md:w-auto">
-              <div className="t-meta mb-2">почта</div>
+              <div className="t-meta mb-2">{t.contact.emailLabel}</div>
               <a
                 href="mailto:id.140dev@gmail.com"
                 className="t-stretch text-[8vw] md:text-[3.6vw] text-acid hover:text-bone transition-colors block"
@@ -170,9 +167,11 @@ export default function ContactPage() {
       </div>
 
       <footer className="mt-24 grid grid-cols-12 gap-4 t-meta" data-tline>
-        <div className="col-span-12 md:col-span-6">© {new Date().getFullYear()} id.140dev</div>
+        <div className="col-span-12 md:col-span-6">
+          © {new Date().getFullYear()} id.140dev
+        </div>
         <div className="col-span-12 md:col-span-6 text-right">
-          сделано с next.js · gsap · three.js
+          {t.contact.footer}
         </div>
       </footer>
     </section>

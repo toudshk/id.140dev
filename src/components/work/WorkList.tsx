@@ -1,23 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PROJECTS } from "@/lib/data";
-import { TLink } from "@/components/shell/TLink";
 import { ensureGsap, gsap } from "@/lib/gsap";
+import { useI18n } from "@/lib/i18n/context";
+import { TLink } from "@/components/shell/TLink";
 
-const STATUS_LABEL: Record<string, string> = {
-  live: "опубликован",
-  private: "приватный",
-  wip: "в работе"
-};
-
-/**
- * Список работ. Не сетка карточек — длинная разлинованная таблица:
- * номер, название большим шрифтом, год, роль, статус.
- */
 export function WorkList() {
   const root = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<string | null>(null);
+  const { t, href } = useI18n();
+  const projects = t.projects;
 
   useEffect(() => {
     let cancel = false;
@@ -55,34 +47,34 @@ export function WorkList() {
     >
       <header className="mb-16 grid grid-cols-12 gap-4">
         <div className="col-span-12 md:col-span-3" data-led-meta>
-          <div className="t-meta">02</div>
-          <div className="t-meta mt-1">работы</div>
+          <div className="t-meta">{t.work.code}</div>
+          <div className="t-meta mt-1">{t.work.heading}</div>
         </div>
         <div className="col-span-12 md:col-span-9">
           <h2 className="t-display italic text-[10vw] md:text-[7vw] leading-[0.86] text-bone">
-            работы / 2024 — 2026
+            {t.work.heading} / 2024 — 2026
           </h2>
           <p className="t-mono text-[11px] tracking-[0.28em] text-ash mt-6 max-w-[60ch]">
-            от свежих к старым. часть проектов закрыта по NDA или ещё в работе.
+            {t.work.subtitle}
           </p>
         </div>
       </header>
 
-      {/* шапка таблицы */}
       <div
         className="hidden md:grid grid-cols-12 gap-4 t-meta border-b hairline pb-3 mb-2 sticky top-[calc(var(--edge)*2)] bg-void/80 backdrop-blur-[2px] z-20"
         data-led-meta
       >
-        <span className="col-span-1">№</span>
-        <span className="col-span-5">проект</span>
-        <span className="col-span-2">год</span>
-        <span className="col-span-2">роль</span>
-        <span className="col-span-2 text-right">статус</span>
+        <span className="col-span-1">{t.work.columns.num}</span>
+        <span className="col-span-5">{t.work.columns.project}</span>
+        <span className="col-span-2">{t.work.columns.year}</span>
+        <span className="col-span-2">{t.work.columns.role}</span>
+        <span className="col-span-2 text-right">{t.work.columns.status}</span>
       </div>
 
       <ul className="no-bullets divide-y hairline">
-        {PROJECTS.map((p) => {
+        {projects.map((p) => {
           const closed = p.status === "private";
+
           return (
             <li
               key={p.id}
@@ -102,7 +94,7 @@ export function WorkList() {
                   </span>
                 ) : (
                   <TLink
-                    href={`/work/${p.slug}`}
+                    href={href(`/work/${p.slug}`)}
                     className="block"
                     data-magnetic
                   >
@@ -137,8 +129,8 @@ export function WorkList() {
                     p.status === "live"
                       ? "var(--acid)"
                       : p.status === "wip"
-                      ? "var(--bone)"
-                      : "var(--ash)"
+                        ? "var(--bone)"
+                        : "var(--ash)"
                 }}
               >
                 <span
@@ -149,12 +141,12 @@ export function WorkList() {
                       p.status === "live"
                         ? "var(--acid)"
                         : p.status === "wip"
-                        ? "var(--bone)"
-                        : "var(--blood)",
+                          ? "var(--bone)"
+                          : "var(--blood)",
                     transform: p.status === "wip" ? "rotate(45deg)" : "none"
                   }}
                 />
-                {STATUS_LABEL[p.status]}
+                {t.work.status[p.status]}
               </span>
             </li>
           );
@@ -162,9 +154,11 @@ export function WorkList() {
       </ul>
 
       <footer className="mt-24 grid grid-cols-12 gap-4 t-meta">
-        <div className="col-span-12 md:col-span-3">всего: {PROJECTS.length}</div>
+        <div className="col-span-12 md:col-span-3">
+          {t.work.total}: {projects.length}
+        </div>
         <div className="col-span-12 md:col-span-9 text-bone/60">
-          новые проекты добавляются по мере публикации.
+          {t.work.footer}
         </div>
       </footer>
     </section>

@@ -2,17 +2,16 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { META } from "@/lib/data";
+import { stripLocale } from "@/lib/i18n";
+import { useI18n } from "@/lib/i18n/context";
 import { Logo } from "./Logo";
+import { LocaleSwitch } from "./LocaleSwitch";
 import { TLink } from "./TLink";
 
-/**
- * Тонкая «рама» вокруг страницы:
- * имя в левом верхнем углу, локация и время в правом,
- * город слева снизу, год справа.
- */
 export function Frame() {
   const pathname = usePathname();
+  const { t, href } = useI18n();
+  const { path } = stripLocale(pathname);
   const [time, setTime] = useState("--:--");
 
   useEffect(() => {
@@ -36,34 +35,50 @@ export function Frame() {
       <div className="edge-row top pl-6 pr-6">
         <div className="flex items-center gap-6">
           <TLink
-            href="/"
+            href={href("/")}
             className="interactive group flex items-center gap-3"
             data-magnetic
-            aria-label="id.140dev — на главную"
+            aria-label={t.frame.logoAria}
           >
-            <Logo size={22} markOnly className="transition-opacity group-hover:opacity-80" />
-            <span className="t-meta hidden sm:inline">{META.role}</span>
+            <Logo
+              size={22}
+              markOnly
+              className="transition-opacity group-hover:opacity-80"
+            />
+            <span className="t-meta hidden sm:inline">{t.site.role}</span>
           </TLink>
         </div>
         <div className="flex items-center gap-6">
-          <span className="t-meta hidden md:inline">{sectionLabel(pathname)}</span>
+          <LocaleSwitch />
+          <span className="t-meta hidden md:inline">
+            {sectionLabel(path, t.frame)}
+          </span>
           <span className="t-meta tabular-nums">{time}</span>
         </div>
       </div>
 
       <div className="edge-row bot pl-6 pr-6">
-        <span className="t-meta">{META.city}</span>
-        <span className="t-meta hidden md:inline">© {META.year}</span>
+        <span className="t-meta">{t.site.city}</span>
+        <span className="t-meta hidden md:inline">© {t.site.year}</span>
       </div>
     </div>
   );
 }
 
-function sectionLabel(pathname: string) {
-  if (pathname === "/") return "главная";
-  if (pathname.startsWith("/work/")) return "проект";
-  if (pathname.startsWith("/work")) return "работы";
-  if (pathname.startsWith("/about")) return "обо мне";
-  if (pathname.startsWith("/contact")) return "контакт";
+function sectionLabel(
+  path: string,
+  frame: {
+    home: string;
+    work: string;
+    project: string;
+    about: string;
+    contact: string;
+  }
+) {
+  if (path === "/") return frame.home;
+  if (path.startsWith("/work/")) return frame.project;
+  if (path.startsWith("/work")) return frame.work;
+  if (path.startsWith("/about")) return frame.about;
+  if (path.startsWith("/contact")) return frame.contact;
   return "";
 }

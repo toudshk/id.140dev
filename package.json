@@ -5,7 +5,8 @@
   "description": "ARCHIVE//140 — experimental portfolio artifact for id.140dev",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/fix-static-export.mjs",
+    "pack": "bun run build && powershell -NoProfile -Command \"if (Test-Path deploy-id140dev.zip) { Remove-Item deploy-id140dev.zip -Force }; Compress-Archive -Path out\\* -DestinationPath deploy-id140dev.zip\"",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
