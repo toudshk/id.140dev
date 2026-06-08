@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
+const staticExport = process.env.STATIC_EXPORT === "1";
+
 const nextConfig = {
   reactStrictMode: true,
-  output: "export",
-  trailingSlash: true,
+  ...(staticExport
+    ? {
+        output: "export",
+        trailingSlash: true
+      }
+    : {}),
   images: { unoptimized: true },
   experimental: {
     optimizePackageImports: ["three", "gsap"]

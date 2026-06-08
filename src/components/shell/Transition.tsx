@@ -82,10 +82,14 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
     };
   }, [pathname]);
 
+  useEffect(() => {
+    pendingHref.current = null;
+  }, [pathname]);
+
   const transitionTo = useCallback(
     async (href: string) => {
       if (busy) return;
-      if (href === pathname) return;
+      if (pathsEqual(href, pathname)) return;
       pendingHref.current = href;
       setBusy(true);
       await ensureGsap();
@@ -95,6 +99,15 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
         onComplete: () => {
           justNavigated.current = true;
           router.push(href);
+          // static export can fail to load RSC chunks — fall back to full reload
+          window.setTimeout(() => {
+            if (pendingHref.current !== href) return;
+            if (pathsEqual(href, window.location.pathname)) {
+              pendingHref.current = null;
+              return;
+            }
+            window.location.assign(href);
+          }, 1200);
         }
       });
       tl.to(slats, {
@@ -135,4 +148,12 @@ export function useTransitionTo() {
 
 export function useTransitionBusy() {
   return useContext(TransitionCtx).busy;
+}
+
+function pathsEqual(a: string, b: string) {
+  const norm = (p: string) => {
+    if (!p || p === "/") return "/";
+    return p.endsWith("/") ? p : `${p}/`;
+  };
+  return norm(a) === norm(b);
 }

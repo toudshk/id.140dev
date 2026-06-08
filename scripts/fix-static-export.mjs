@@ -18,7 +18,11 @@ const REPLACEMENTS = [
   ["/n140/static/media/", "/media/"],
   ["/assets/static/chunks/", "/js/"],
   ["/assets/static/css/", "/css/"],
-  ["/assets/static/media/", "/media/"]
+  ["/assets/static/media/", "/media/"],
+  // RSC payload and runtime still reference bare static/* after _next is removed
+  ["static/chunks/", "/js/"],
+  ["static/css/", "/css/"],
+  ["static/media/", "/media/"]
 ];
 
 function walk(dir, onFile) {
